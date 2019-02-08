@@ -75,15 +75,24 @@ def load_api():
 
 def main():
     ICON = '\uf058'
+    EXCEPTION_REFRESH_RATE = 2.5
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--prefix', default=ICON)
     parser.add_argument('-w', '--weekly', action='store_true')
     args = parser.parse_args()
 
-    api = load_api()
+    while True:
+        try:
+            api = load_api()
 
-    print_loop(api, args.prefix, args.weekly)
+            print_loop(api, args.prefix, args.weekly)
+        except Exception as error:
+            # with open('errors.log', 'w') as file:
+            #     file.write(str(error))
+
+            print(f'{ICON} ~', flush=True)
+            time.sleep(EXCEPTION_REFRESH_RATE)
 
 
 if __name__ == "__main__":
