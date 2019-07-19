@@ -8,17 +8,23 @@ from auth import TOKEN_FILENAME, test_api_token, token_file_path
 from datetime import datetime, timedelta
 from todoist.api import TodoistAPI
 
+def item_due_today(dueDate):
+    dueDate = dueDate[:15]
+    dueTimestamp = datetime.strptime(dueDate, '%a %d %b %Y')
+    today = datetime.today()
+    diff = (today - dueTimestamp).total_seconds()
+
+    # The second condition is necessary to not count in the previous day todo items
+    return diff > 0 and diff < 60*60*24
+
 def due_today_count(api):
     dueToday = 0
     for item in api.state['items']:
+        if 'due_date_utc' not in item.data:
+            continue
         dueDate = item['due_date_utc']
         completed = item['checked']
-        if dueDate is not None:
-            dueDate = dueDate[:15]
-            dueTimestamp = datetime.strptime(dueDate, '%a %d %b %Y')
-            today = datetime.today()
-
-            if (today - dueTimestamp).total_seconds() > 0 and not completed:
+        if dueDate is not None and item_due_today(dueDate) and not completed:
                 dueToday += 1
 
     return dueToday
@@ -26,6 +32,8 @@ def due_today_count(api):
 def due_this_week(api):
     dueThisWeek = 0
     for item in api.state['items']:
+        if 'due_date_utc' not in item.data:
+            continue
         dueDate = item['due_date_utc']
         completed = item['checked']
         if dueDate is not None:
