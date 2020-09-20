@@ -10,19 +10,18 @@ from todoist.api import TodoistAPI
 
 def item_due_today(dueDate):
     dueDate = dueDate[:15]
-    dueTimestamp = datetime.strptime(dueDate, '%a %d %b %Y')
+    dueTimestamp = datetime.strptime(dueDate, '%Y-%m-%d')
     today = datetime.today()
     diff = (today - dueTimestamp).total_seconds()
 
-    # The second condition is necessary to not count in the previous day todo items
-    return diff > 0 and diff < 60*60*24
+    return diff > 0
 
 def due_today_count(api):
     dueToday = 0
     for item in api.state['items']:
-        if 'due_date_utc' not in item.data:
+        if 'due' not in item.data or not item.data['due']:
             continue
-        dueDate = item['due_date_utc']
+        dueDate = item.data['due']['date']
         completed = item['checked']
         if dueDate is not None and item_due_today(dueDate) and not completed:
                 dueToday += 1
@@ -32,13 +31,13 @@ def due_today_count(api):
 def due_this_week(api):
     dueThisWeek = 0
     for item in api.state['items']:
-        if 'due_date_utc' not in item.data:
+        if 'due' not in item.data or not item.data['due']:
             continue
-        dueDate = item['due_date_utc']
+        dueDate = item.data['due']['date']
         completed = item['checked']
         if dueDate is not None:
             dueDate = dueDate[:15]
-            dueTimestamp = datetime.strptime(dueDate, '%a %d %b %Y')
+            dueTimestamp = datetime.strptime(dueDate, '%Y-%m-%d')
             today = datetime.today()
             thisWeek = today + timedelta(weeks=1)
 
