@@ -8,11 +8,11 @@ tasks for today or for the week.
 ## Dependencies
 
 ```sh
-pip install --user todoist-python==7.0.18
+pip install --user todoist-python==8.1.2
 ```
 
-Tested and **works** with `todoist-python` version **7.0.18**  
-Tested and **doesn't work** with `todoist-python` version **8.0.0**
+Tested and should work with `todoist-python` version **8.1.2**, but it might or
+might not work with newer versions as well.
 
 ## Installation
 
